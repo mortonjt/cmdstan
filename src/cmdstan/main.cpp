@@ -28,14 +28,17 @@ int main(int argc, const char *argv[]) {
   cmdstan::GenerateQuantitiesOptions generate_quantities_options;
 
   CLI::App app{"Stan program"};
-  app.set_version_flag("-v,--version", std::string("CmdStan v") + CMDSTAN_VERSION + "; CLI11 prototype");
-    
+  app.set_version_flag(
+      "-v,--version",
+      std::string("CmdStan v") + CMDSTAN_VERSION + "; CLI11 prototype");
+
   app.require_subcommand(1);
   cmdstan::setup_sample(app, shared_options, sample_options);
   cmdstan::setup_optimize(app, shared_options, optimize_options);
   cmdstan::setup_variational(app, shared_options, variational_options);
   cmdstan::setup_diagnose(app, shared_options, diagnose_options);
-  cmdstan::setup_generate_quantities(app, shared_options, generate_quantities_options);
+  cmdstan::setup_generate_quantities(app, shared_options,
+                                     generate_quantities_options);
 
   try {
     app.parse(argc, argv);
@@ -59,21 +62,21 @@ int main(int argc, const char *argv[]) {
     if (subcommand == "optimize")
       return_code = cmdstan::optimize(app, shared_options, optimize_options);
     if (subcommand == "variational")
-      return_code = cmdstan::variational(app, shared_options,
-					 variational_options);
+      return_code
+          = cmdstan::variational(app, shared_options, variational_options);
     if (subcommand == "diagnose")
       return_code = cmdstan::diagnose(app, shared_options, diagnose_options);
     if (subcommand == "generate_quantities")
       return_code = cmdstan::generate_quantities(app, shared_options,
-						 generate_quantities_options);
-  } catch(std::runtime_error& e) {
+                                                 generate_quantities_options);
+  } catch (std::runtime_error &e) {
     std::cerr << e.what() << std::endl;
     return_code = stan::services::error_codes::USAGE;
-  } catch(std::domain_error& e) {
+  } catch (std::domain_error &e) {
     std::cerr << e.what() << std::endl;
     return_code = stan::services::error_codes::SOFTWARE;
   }
-  
+
 #ifdef STAN_MPI
   cluster.stop_listen();
 #endif

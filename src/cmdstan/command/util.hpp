@@ -14,26 +14,26 @@ stan::model::model_base &new_model(stan::io::var_context &data_context,
 
 namespace cmdstan {
 
-  std::shared_ptr<stan::io::var_context> get_var_context(const std::string file) {
-    std::fstream stream(file.c_str(), std::fstream::in);
-    if (file != "" && (stream.rdstate() & std::ifstream::failbit)) {
-      std::stringstream msg;
-      msg << "Can't open specified file, \"" << file << "\"" << std::endl;
-      throw std::invalid_argument(msg.str());
-    }
-    if (stan::io::ends_with(".json", file)) {
-      cmdstan::json::json_data var_context(stream);
-      stream.close();
-      std::shared_ptr<stan::io::var_context> result
-        = std::make_shared<cmdstan::json::json_data>(var_context);
-      return result;
-    }
-    stan::io::dump var_context(stream);
+std::shared_ptr<stan::io::var_context> get_var_context(const std::string file) {
+  std::fstream stream(file.c_str(), std::fstream::in);
+  if (file != "" && (stream.rdstate() & std::ifstream::failbit)) {
+    std::stringstream msg;
+    msg << "Can't open specified file, \"" << file << "\"" << std::endl;
+    throw std::invalid_argument(msg.str());
+  }
+  if (stan::io::ends_with(".json", file)) {
+    cmdstan::json::json_data var_context(stream);
     stream.close();
     std::shared_ptr<stan::io::var_context> result
-      = std::make_shared<stan::io::dump>(var_context);
+        = std::make_shared<cmdstan::json::json_data>(var_context);
     return result;
   }
+  stan::io::dump var_context(stream);
+  stream.close();
+  std::shared_ptr<stan::io::var_context> result
+      = std::make_shared<stan::io::dump>(var_context);
+  return result;
+}
 
 }  // namespace cmdstan
 
